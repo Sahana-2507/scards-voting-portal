@@ -126,7 +126,6 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Faculty Passcode</label>
                         <input type="password" id="teacherCode" required placeholder="Enter passcode to view results" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
-                        <p class="text-[11px] text-indigo-600 mt-1.5 font-medium">* Default Faculty Passcode: <span class="font-bold underline">SCARDS2026</span></p>
                     </div>
                     <button type="submit" class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-violet-600/25 text-sm mt-2">
                         Sign In (Faculty Vote & Results)
@@ -421,9 +420,9 @@
 
         function getUserDisplayRole(user) {
             if (!user) return '';
-            if (user.role === 'student') return 'Student (1 Vote)';
+            if (user.role === 'student') return 'Student';
             const weight = calculateUserWeight(user);
-            return weight === 5 ? 'HOD (5 Votes)' : 'Faculty (3 Votes)';
+            return weight === 5 ? 'HOD' : 'Faculty';
         }
 
         db.ref('candidates').on('value', (snapshot) => {
