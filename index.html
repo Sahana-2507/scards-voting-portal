@@ -715,18 +715,17 @@
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs text-slate-600 font-bold"><i class="fa-solid fa-users text-indigo-600 mr-1.5" aria-hidden="true"></i> ${c.votes || 0} pts</span>
-                        <div class="flex items-center space-x-2">
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+                        <div class="flex items-center space-x-2 w-full justify-between">
                             ${isFaculty ? `
-                                <button onclick="deleteCandidate('${c.id}')" class="focus-ring px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 transition" title="Delete Candidate" aria-label="Delete ${c.name}">
+                                <button onclick="deleteCandidate('${c.id}')" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 transition" title="Delete Candidate" aria-label="Delete ${c.name}">
                                     <i class="fa-solid fa-trash" aria-hidden="true"></i>
                                 </button>
-                            ` : ''}
+                            ` : '<div></div>'}
                             <button 
                                 onclick="openVoteModal('${c.name}', '${c.position}', '${c.id}')"
                                 ${hasVotedForPosting ? 'disabled' : ''}
-                                class="focus-ring px-6 py-2.5 rounded-xl text-xs font-bold transition ${
+                                class="px-6 py-2.5 rounded-xl text-xs font-bold transition ${
                                     hasVotedForPosting 
                                     ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed' 
                                     : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20'
