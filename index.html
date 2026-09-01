@@ -896,7 +896,7 @@
                                 <div class="text-xs space-y-1 mt-1">
                                     <div class="flex justify-between text-slate-600 font-medium">
                                         <span class="font-semibold text-slate-900">${c.name} <span class="text-slate-400 font-normal">(${c.dept})</span></span>
-                                        <span class="font-bold text-indigo-600">${c.votes || 0} pts (${pct}%)</span>
+                                        <span class="font-bold text-indigo-600">${pct}%</span>
                                     </div>
                                     <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/60">
                                         <div class="bg-gradient-to-r from-indigo-500 to-violet-500 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
@@ -920,7 +920,7 @@
                 return;
             }
 
-            let csvContent = "Academic Year,Position,Candidate Name,Department,Weighted Points,Share (%)\n";
+            let csvContent = "Academic Year,Position,Candidate Name,Department,Vote Share (%)\n";
 
             Object.keys(ROSTER).forEach(year => {
                 ROSTER[year].forEach(pos => {
@@ -929,7 +929,7 @@
 
                     posCands.forEach(c => {
                         const pct = totalVotes > 0 ? ((c.votes || 0) / totalVotes * 100).toFixed(1) : "0.0";
-                        csvContent += `"${year}","${pos.name}","${c.name}","${c.dept}",${c.votes || 0},"${pct}%"\n`;
+                        csvContent += `"${year}","${pos.name}","${c.name}","${c.dept}","${pct}%"\n`;
                     });
                 });
             });
@@ -995,7 +995,6 @@
                             pos.name,
                             c.name,
                             c.dept,
-                            c.votes || 0,
                             `${pct}%`
                         ]);
                     });
@@ -1005,13 +1004,13 @@
             // Generate autoTable
             doc.autoTable({
                 startY: 46,
-                head: [["Year Group", "Position", "Candidate Name", "Dept", "Points", "Share"]],
+                head: [["Year Group", "Position", "Candidate Name", "Dept", "Vote Share"]],
                 body: tableRows,
                 theme: "striped",
                 headStyles: { 
                     fillColor: [30, 58, 138], 
                     textColor: 255, 
-                    fontStyle: "bold",
+                    fontStyle: "bold", 
                     fontSize: 8.5
                 },
                 styles: { 
@@ -1019,8 +1018,7 @@
                     cellPadding: 3 
                 },
                 columnStyles: {
-                    4: { halign: "center" },
-                    5: { halign: "center" }
+                    4: { halign: "center" }
                 }
             });
 
