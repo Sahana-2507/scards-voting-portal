@@ -611,10 +611,15 @@
             document.getElementById('currentYearTitle').textContent = `${selectedYear} Postings`;
             grid.innerHTML = '';
 
+            const normalize = str => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').replace(/s$/, '');
             const posts = ROSTER[selectedYear] || [];
 
             posts.forEach(post => {
-                const count = candidates.filter(c => c.year === selectedYear && c.position === post.name).length;
+                const count = candidates.filter(c => 
+                    normalize(c.year) === normalize(selectedYear) && 
+                    normalize(c.position) === normalize(post.name)
+                ).length;
+
                 const card = document.createElement('div');
                 card.className = "bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:shadow-md transition cursor-pointer flex justify-between items-center group";
                 card.onclick = () => openCandidatesView(post.name);
@@ -679,11 +684,17 @@
             const grid = document.getElementById('candidatesGrid');
             grid.innerHTML = '';
 
-            const list = candidates.filter(c => c.year === selectedYear && c.position === selectedPosition);
+            const normalize = str => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').replace(/s$/, '');
+
+            const list = candidates.filter(c => 
+                normalize(c.year) === normalize(selectedYear) && 
+                normalize(c.position) === normalize(selectedPosition)
+            );
             
-            const cleanYear = selectedYear.replace(/\s+/g, '_');
-            const cleanPos = selectedPosition.replace(/[^a-zA-Z0-9]/g, '_');
-            const postingKey = `${currentUser.id}_${cleanYear}_${cleanPos}`;
+            const cleanYear = (selectedYear || '').replace(/\s+/g, '_');
+            const cleanPos = (selectedPosition || '').replace(/[^a-zA-Z0-9]/g, '_');
+            const userId = currentUser ? currentUser.id : 'anon';
+            const postingKey = `${userId}_${cleanYear}_${cleanPos}`;
             const hasVotedForPosting = !!votesCast[postingKey];
 
             if (list.length === 0) {
@@ -696,21 +707,30 @@
             list.forEach(c => {
                 const imgUrl = c.image || 'https://via.placeholder.com/200';
                 const card = document.createElement('div');
-                card.className = "candidate-card bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-5 relative";
+                card.className = "candidate-card bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-5 relative";
 
                 card.innerHTML = `
                     <div class="space-y-4">
-                        <div class="flex items-start space-x-5">
-                            <img src="${imgUrl}" alt="${c.name}" class="w-28 h-28 rounded-2xl object-cover border-2 border-indigo-500 shadow-md flex-shrink-0">
-                            <div class="space-y-1.5 pt-1">
-                                <span class="text-[10px] font-black bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-md border border-indigo-200 uppercase">${c.dept}</span>
-                                <h4 class="font-extrabold text-slate-900 text-xl leading-snug">${c.name}</h4>
-                                <p class="text-xs text-indigo-600 font-semibold">${c.position}</p>
+                        <div class="flex items-start space-x-4">
+                            <div class="relative">
+                                <img src="${imgUrl}" alt="${c.name}" class="w-24 h-24 rounded-2xl object-cover border-2 border-indigo-500 shadow-md flex-shrink-0">
+                                <span class="absolute -bottom-1 -right-1 bg-emerald-500 w-3.5 h-3.5 rounded-full border-2 border-white shadow-sm" title="Verified Nominee"></span>
+                            </div>
+                            <div class="space-y-1 pt-1 flex-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md border border-indigo-200 uppercase tracking-wider">${c.dept}</span>
+                                    <span class="text-[9px] font-mono text-slate-400">ID#${(c.id || '').slice(-4)}</span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-900 text-lg leading-snug">${c.name}</h4>
+                                <p class="text-xs text-indigo-600 font-semibold tracking-tight">${c.position}</p>
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/60">
-                            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Goal Statement</p>
+                        <div class="bg-slate-50/90 p-3.5 rounded-2xl border border-slate-200/70">
+                            <div class="flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-terminal text-[10px] text-indigo-500"></i>
+                                <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Candidate Pitch</p>
+                            </div>
                             <p class="text-xs text-slate-700 italic font-medium leading-relaxed">"${c.motto}"</p>
                         </div>
                     </div>
@@ -718,19 +738,20 @@
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
                         <div class="flex items-center space-x-2 w-full justify-between">
                             ${isFaculty ? `
-                                <button onclick="deleteCandidate('${c.id}')" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 transition" title="Delete Candidate" aria-label="Delete ${c.name}">
-                                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                <button onclick="deleteCandidate('${c.id}')" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 transition" title="Delete Candidate">
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             ` : '<div></div>'}
                             <button 
                                 onclick="openVoteModal('${c.name}', '${c.position}', '${c.id}')"
                                 ${hasVotedForPosting ? 'disabled' : ''}
-                                class="px-6 py-2.5 rounded-xl text-xs font-bold transition ${
+                                class="px-6 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
                                     hasVotedForPosting 
                                     ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed' 
-                                    : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20'
+                                    : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-600/25'
                                 }">
-                                ${hasVotedForPosting ? '<i class="fa-solid fa-check mr-1" aria-hidden="true"></i> Voted' : 'Vote Candidate'}
+                                <i class="fa-solid ${hasVotedForPosting ? 'fa-check' : 'fa-fingerprint'}"></i>
+                                <span>${hasVotedForPosting ? 'Voted' : 'Vote Candidate'}</span>
                             </button>
                         </div>
                     </div>
